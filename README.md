@@ -1,0 +1,1 @@
+# naver-mail-bot
