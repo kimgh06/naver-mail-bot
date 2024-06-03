@@ -4,7 +4,7 @@ import { DiscoveryModule, DiscoveryService } from '@nestjs/core';
 import { Client, GatewayIntentBits } from 'discord.js';
 import { BaseHandler } from './handlers/base.handler';
 import { MESSAGE_HANDLER_METADATA_KEY } from './bot.constant';
-import { EmailHandler } from './handlers/email.hander';
+import { EmailHandler } from './handlers/email.handler';
 
 @Module({
   imports: [ConfigModule.forRoot(), DiscoveryModule],
