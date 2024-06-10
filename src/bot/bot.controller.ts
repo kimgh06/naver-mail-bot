@@ -37,19 +37,21 @@ export class BotController {
       } while (next)
 
       if (origincnt !== cnt) {
-        origincnt = cnt;
-        await message.channel.send(`\n<@${userId}>\n${id}에서 읽지 않은 메일: ${cnt}`)
-        let list = [];
-        for (let m of messages) {
-          const data = await email.users.messages.get({
-            userId: id,
-            id: m.id!
-          })
-          let subject = data.data.payload?.headers?.filter(e => e.name === 'Subject' && e)[0].value
-          let from = data.data.payload?.headers?.filter(e => e.name === 'From' && e)[0].value
-          list.push(`${from}: ${subject}`)
+        if (origincnt < cnt) {
+          await message.channel.send(`\n<@${userId}>\n${id}에서 읽지 않은 메일: ${cnt}`)
+          let list = [];
+          for (let m of messages) {
+            const data = await email.users.messages.get({
+              userId: id,
+              id: m.id!
+            })
+            let subject = data.data.payload?.headers?.filter(e => e.name === 'Subject' && e)[0].value
+            let from = data.data.payload?.headers?.filter(e => e.name === 'From' && e)[0].value
+            list.push(`${from}: ${subject}`)
+          }
+          await message.channel.send(list.toString().replace(/,/g, '\n'));
         }
-        await message.channel.send(list.toString().replace(/,/g, '\n'));
+        origincnt = cnt;
       }
     }, 2000);
   }
