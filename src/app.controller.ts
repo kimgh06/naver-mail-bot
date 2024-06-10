@@ -6,7 +6,7 @@ import { Request } from 'express';
 export class AppController {
   constructor(private readonly appService: AppService) { }
 
-  @Get('/hello')
+  @Get('/auth')
   async getHello(@Req() req: Request): Promise<string> {
     return this.appService.getQueries(req);
   }

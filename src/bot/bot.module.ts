@@ -1,7 +1,7 @@
-import { Logger, Module, OnModuleInit } from '@nestjs/common';
+import { Get, Logger, Module, OnModuleInit } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DiscoveryModule, DiscoveryService } from '@nestjs/core';
-import { Client, GatewayIntentBits } from 'discord.js';
+import { Client, GatewayIntentBits, Message } from 'discord.js';
 import { BaseHandler } from './handlers/base.handler';
 import { MESSAGE_HANDLER_METADATA_KEY } from './bot.constant';
 import { EmailHandler } from './handlers/email.handler';
@@ -13,6 +13,7 @@ import { EmailHandler } from './handlers/email.handler';
 export class BotModule implements OnModuleInit {
   private instanceByMessage: { [message: string]: BaseHandler };
   private logger = new Logger();
+  private message: Message;
 
   constructor(
     private readonly configService: ConfigService,
@@ -58,20 +59,21 @@ export class BotModule implements OnModuleInit {
       ],
     });
     client.on('messageCreate', async (message) => {
-      if (message.author.bot) {
+      this.message = message
+      if (this.message.author.bot) {
         return;
       }
 
-      let args = message.content.trim().split(/ +/g);
+      let args = this.message.content.trim().split(/ +/g);
       const route = args[0]
       args.shift();
       const foundInstance = this.instanceByMessage[route];
       if (foundInstance) {
-        foundInstance.process(message, args);
+        foundInstance.process(this.message, args);
         return;
       }
 
-      this.logger.log(`No message handler found for "${message.content}"`);
+      this.logger.log(`No message handler found for "${this.message.content}"`);
     });
     client.on('ready', () => {
       this.logger.log('Bot is listening...');

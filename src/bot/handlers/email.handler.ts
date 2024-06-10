@@ -1,25 +1,52 @@
 import { BaseHandler } from './base.handler';
 import { MessageHandler } from '../bot.decorator';
 import { Message } from 'discord.js';
+import { gmail_v1, google } from 'googleapis';
+import { OAuth2Client } from 'google-auth-library';
 
 @MessageHandler('/setemail')
 export class EmailHandler extends BaseHandler {
-  private email: string = '';
+  private email: gmail_v1.Gmail;
+  private oAuth2Client: OAuth2Client;
+  private id: string;
+  private message: Message
+  async getEmails() {
+    const res = await this.email.users.messages.list({ userId: this.id });
+    return res.data
+  }
+
+  async getMessage() {
+    return this.message;
+  }
+
   async process(message: Message, args: string[]) {
-    const url = process.env.NAVER_API_URL;
+    this.message = message;
     const newemail = args[0];
-    const author = message.author.displayName
-    const acc_url = `https://auth.worksmobile.com/oauth2/v2.0/authorize?client_id=${process.env.NAVER_CLIENT}&redirect_uri=${process.env.REDIRECT}&scope=email&response_type=code&state=UmyR2sX9gO`
-    await message.channel.send(`vertify to ${acc_url}`);
-    // const data = await fetch(`${url}/users/${email}/mail/unread-count`,
-    //   { headers: { 'Authorization': `Bearer ${access}` } })
-    // console.log(data);
-    this.email = newemail;
-    const inter = setInterval(async () => {
-      await message.channel.send(`${this.email} ${author}`);
-      clearInterval(inter)
-      if (this.email !== newemail) {
-      }
-    }, 1000);
+    const author = this.message.author.displayName
+    this.id = newemail;
+    try {
+      this.oAuth2Client = new google.auth.OAuth2(
+        process.env.GMAIL_CLIENT as string,
+        process.env.GMAIL_SECRET as string,
+        process.env.REDIRECT as string
+      );
+      this.email = google.gmail({ version: 'v1', auth: this.oAuth2Client });
+      const scopes = ['https://www.googleapis.com/auth/gmail.readonly'];
+      const url = this.oAuth2Client.generateAuthUrl({
+        access_type: 'offline',
+        scope: scopes
+      })
+      await this.message.channel.send(`${this.id} ${author} complete`);
+      await this.message.channel.send(`${url}`);
+    } catch (e) {
+      console.log(e)
+    }
+    // const inter = setInterval(async () => {
+    //   if (this.id !== newemail) {
+    //     clearInterval(inter)
+    //   }
+    //   const list = await this.getEmails();
+    //   await message.channel.send(`${this.id} ${list}`);
+    // }, 1000);
   }
 }
