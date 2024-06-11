@@ -139,35 +139,36 @@ export class BotService implements OnModuleInit {
         GatewayIntentBits.MessageContent,
       ],
     });
-    client.on('messageCreate', async (message) => {
-      this.message = message;
-      if (this.message.author.bot) {
-        return;
-      }
-
-      let args = this.message.content.trim().split(/ +/g);
-      const route = args[0];
-      args.shift();
-      const foundInstance = this.instanceByMessage[route];
-      if (foundInstance) {
-        const data: any = await foundInstance.process(this.message, args);
-        if (route === '/setemail' && data) {
-          const { oAuth2Client, email, id, userId }: processReturnType = data;
-          this.auth = oAuth2Client;
-          this.email = email;
-          this.id = id;
-          this.userId = userId
-        }
-        return;
-      }
-
-      this.logger.log(`No message handler found for "${this.message.content}"`);
-      (client.channels.cache.get('1246972112166584361') as TextChannel).send(`no message`);
-    });
-    client.on('ready', (client) => {
+    client.on('ready', () => {
       this.logger.log('Bot is listening...');
       const channel = '1246972112166584361';
       (client.channels.cache.get(channel) as TextChannel).send(`${channel}`);
+
+      client.on('messageCreate', async (message) => {
+        this.message = message;
+        if (this.message.author.bot) {
+          return;
+        }
+
+        let args = this.message.content.trim().split(/ +/g);
+        const route = args[0];
+        args.shift();
+        const foundInstance = this.instanceByMessage[route];
+        if (foundInstance) {
+          const data: any = await foundInstance.process(this.message, args);
+          if (route === '/setemail' && data) {
+            const { oAuth2Client, email, id, userId }: processReturnType = data;
+            this.auth = oAuth2Client;
+            this.email = email;
+            this.id = id;
+            this.userId = userId
+          }
+          return;
+        }
+
+        this.logger.log(`No message handler found for "${this.message.content}"`);
+        (client.channels.cache.get('1246972112166584361') as TextChannel).send(`no message`);
+      });
     });
     void client.login(this.configService.get<string>('DISCORD_TOKEN'));
   }
