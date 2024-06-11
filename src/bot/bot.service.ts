@@ -164,7 +164,7 @@ export class BotService implements OnModuleInit {
     });
     client.on('ready', (client) => {
       this.logger.log('Bot is listening...');
-      (client.channels.cache.get('1246972112166584361') as TextChannel).send(`hello ${!!this.configService.get<string>('DISCORD_TOKEN')}`);
+      (client.channels.cache.get('1246972112166584361') as TextChannel).send(`working`);
     });
     void client.login(this.configService.get<string>('DISCORD_TOKEN'));
   }
