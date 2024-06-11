@@ -7,6 +7,7 @@ import { MESSAGE_HANDLER_METADATA_KEY } from './bot.constant';
 import { Request } from 'express';
 import { OAuth2Client, Credentials } from 'google-auth-library';
 import { gmail_v1 } from 'googleapis';
+import { channel } from 'diagnostics_channel';
 
 type processReturnType = {
   oAuth2Client: OAuth2Client,
@@ -165,7 +166,8 @@ export class BotService implements OnModuleInit {
     });
     client.on('ready', (client) => {
       this.logger.log('Bot is listening...');
-      (client.channels.cache.get('1246972112166584361') as TextChannel).send(`working`);
+      const channel = '1246972112166584361';
+      (client.channels.cache.get(channel) as TextChannel).send(`${channel}`);
     });
     void client.login(this.configService.get<string>('DISCORD_TOKEN'));
   }
