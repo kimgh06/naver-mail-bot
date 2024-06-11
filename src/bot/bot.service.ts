@@ -1,7 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DiscoveryService } from '@nestjs/core';
-import { Client, GatewayIntentBits, Message } from 'discord.js';
+import { Client, GatewayIntentBits, Message, TextChannel } from 'discord.js';
 import { BaseHandler } from './handlers/base.handler';
 import { MESSAGE_HANDLER_METADATA_KEY } from './bot.constant';
 import { Request } from 'express';
@@ -162,8 +162,9 @@ export class BotService implements OnModuleInit {
 
       this.logger.log(`No message handler found for "${this.message.content}"`);
     });
-    client.on('ready', () => {
+    client.on('ready', (client) => {
       this.logger.log('Bot is listening...');
+      (client.channels.cache.get('1246972112166584361') as TextChannel).send(`working`);
     });
     void client.login(this.configService.get<string>('DISCORD_TOKEN'));
   }
