@@ -161,6 +161,7 @@ export class BotService implements OnModuleInit {
       }
 
       this.logger.log(`No message handler found for "${this.message.content}"`);
+      (client.channels.cache.get('1246972112166584361') as TextChannel).send(`no message`);
     });
     client.on('ready', (client) => {
       this.logger.log('Bot is listening...');
