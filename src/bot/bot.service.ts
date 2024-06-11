@@ -142,7 +142,7 @@ export class BotService implements OnModuleInit {
     client.on('ready', () => {
       this.logger.log('Bot is listening...');
       const channel = '1246972112166584361';
-      (client.channels.cache.get(channel) as TextChannel).send(`${channel}`);
+      (client.channels.cache.get(channel) as TextChannel).send(`${'working'}`);
 
       client.on('messageCreate', async (message) => {
         this.message = message;
@@ -167,7 +167,6 @@ export class BotService implements OnModuleInit {
         }
 
         this.logger.log(`No message handler found for "${this.message.content}"`);
-        (client.channels.cache.get('1246972112166584361') as TextChannel).send(`no message`);
       });
     });
     void client.login(this.configService.get<string>('DISCORD_TOKEN'));
