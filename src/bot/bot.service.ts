@@ -101,7 +101,7 @@ export class BotService implements OnModuleInit {
       return list['code'];
     }
     catch (e) {
-      console.log(e)
+      this.logger.error(e)
       return e;
     }
   }
