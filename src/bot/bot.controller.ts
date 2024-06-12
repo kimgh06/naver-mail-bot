@@ -22,6 +22,7 @@ export class BotController {
     const userId: string = this.botService.getUserId();
     let origincnt: number = 1;
 
+    await message.channel.send(`\n\n${id}로 연결 됨`);
     const inter = setInterval(async () => {
       if (id !== this.botService.getId()) {
         clearInterval(inter)
@@ -56,7 +57,7 @@ export class BotController {
         if (cnt === 0) {
           await message.channel.send(`\n\n${id}의 메일을 다 읽음.`);
         }
-        origincnt = cnt;
+        origincnt = cnt
       }
     }, 2000);
   }
