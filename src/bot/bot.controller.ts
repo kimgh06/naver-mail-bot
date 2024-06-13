@@ -14,20 +14,21 @@ export class BotController {
   async verifying(@Req() req: Request) {
     const code: string = this.botService.getQueries(req);
     const message: Message = this.botService.getMessages();
-    const channel: TextChannel = this.botService.getChannel();
+    let channel: TextChannel = this.botService.getChannel();
     const auth: OAuth2Client = this.botService.getAuth();
     const { tokens } = await auth.getToken(code);
     await this.botService.setCredentials(tokens);
     const email: gmail_v1.Gmail = this.botService.getEmail();
     const id: string = this.botService.getId();
     const userId: string = this.botService.getUserId();
-    let origincnt: number = 1;
+    let origincnt: number = -1;
 
     await channel.send(`\n\n${id}로 연결 됨`);
     const inter = setInterval(async () => {
       if (id !== this.botService.getId()) {
         clearInterval(inter)
       }
+      // channel = this.botService.getChannel();
       let next: string | undefined;
       let messages: gmail_v1.Schema$Message[] = [];
       let cnt: number = 0;
@@ -41,7 +42,11 @@ export class BotController {
       } while (next)
 
       if (origincnt !== cnt) {
-        if (origincnt < cnt) {
+        console.log(origincnt, cnt)
+        if (cnt === 0) {
+          await channel.send(`\n\n${id}의 메일을 다 읽음.`);
+        }
+        else if (origincnt < cnt) {
           await channel.send(`\n<@${userId}>\n${id}에서 읽지 않은 메일: ${cnt}`);
           let list: string[] = [];
           for (let m of messages) {
@@ -54,9 +59,6 @@ export class BotController {
             list.push(`${from}: ${subject}`);
           }
           await channel.send(list.toString().replace(/,/g, '\n\n'));
-        }
-        if (cnt === 0) {
-          await channel.send(`\n\n${id}의 메일을 다 읽음.`);
         }
         origincnt = cnt;
       }
