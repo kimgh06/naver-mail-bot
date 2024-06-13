@@ -28,6 +28,7 @@ export class BotService implements OnModuleInit {
   private email: gmail_v1.Gmail;
   private id: string;
   private userId: string;
+  private channel: TextChannel;
 
   constructor(
     private readonly configService: ConfigService,
@@ -41,6 +42,10 @@ export class BotService implements OnModuleInit {
 
   getEmail(): gmail_v1.Gmail {
     return this.email;
+  }
+
+  getChannel(): TextChannel {
+    return this.channel;
   }
 
   getId(): string {
@@ -141,8 +146,9 @@ export class BotService implements OnModuleInit {
     });
     client.on('ready', () => {
       this.logger.log('Bot is listening...');
-      const channel = '1246972112166584361';
-      (client.channels.cache.get(channel) as TextChannel).send(`${'working'}`);
+      let chid = '1246972112166584361';
+      this.channel = client.channels.cache.get(chid) as TextChannel
+      this.channel.send(`${'working'}`);
 
       client.on('messageCreate', async (message) => {
         this.message = message;
@@ -162,6 +168,11 @@ export class BotService implements OnModuleInit {
             this.email = email;
             this.id = id;
             this.userId = userId
+            return;
+          }
+          if (route === '/setchannel') {
+            chid = data as string;
+            this.channel = client.channels.cache.get(data) as TextChannel
           }
           return;
         }

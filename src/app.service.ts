@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Request } from 'express';
 import { decode } from 'querystring';
-import { EmailHandler } from './bot/handlers/email.handler';
+import { EmailHandler } from './bot/handlers/setemail.handler';
 
 @Injectable()
 export class AppService {
