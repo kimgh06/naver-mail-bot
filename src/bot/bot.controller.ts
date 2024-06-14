@@ -28,7 +28,6 @@ export class BotController {
       if (id !== this.botService.getId()) {
         clearInterval(inter)
       }
-      // channel = this.botService.getChannel();
       let next: string | undefined;
       let messages: gmail_v1.Schema$Message[] = [];
       let cnt: number = 0;
@@ -42,7 +41,7 @@ export class BotController {
       } while (next)
 
       if (origincnt !== cnt) {
-        console.log(origincnt, cnt)
+        channel = this.botService.getChannel();
         if (cnt === 0) {
           await channel.send(`\n\n${id}의 메일을 다 읽음.`);
         }
