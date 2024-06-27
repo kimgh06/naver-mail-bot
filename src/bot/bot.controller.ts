@@ -61,6 +61,6 @@ export class BotController {
         }
         origincnt = cnt;
       }
-    }, 2000);
+    }, 3000);
   }
 }
